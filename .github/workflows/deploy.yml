@@ -42,4 +42,4 @@ jobs:
         docker build -t $image .
         docker push $image
         export container_properties="{\"image\":\"$image\",\"executionRoleArn\":\"string\",\"resourceRequirements\":[{\"type\":\"VCPU\",\"value\":\"0.25\"},{\"type\":\"MEMORY\",\"value\":\"512\"}]}"
-        aws batch register-job-definition --job-definition-name openwrench_periodic_pm_schedule --platform-capabilities FARGATE --type container --container-properties container_properties --region us-east-1
+        aws batch register-job-definition --job-definition-name openwrench_periodic_pm_schedule --platform-capabilities FARGATE --type container --container-properties $container_properties --region us-east-1
