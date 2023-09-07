@@ -37,9 +37,10 @@ jobs:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         ECR_REPOSITORY: openwrench_periodic_pm_schedule
         IMAGE_TAG: ${{ github.sha }}
+        EXECUTION_ROLE_ARN: ${{ secrets.AWS_EXECUTION_ROLE_ARN }}
       run: |
-        export image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-        docker build -t $image .
-        docker push $image
-        export container_properties="{\"image\":\"$image\",\"executionRoleArn\":\"string\",\"resourceRequirements\":[{\"type\":\"VCPU\",\"value\":\"0.25\"},{\"type\":\"MEMORY\",\"value\":\"512\"}]}"
+        export IMAGE=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        docker build -t $IMAGE .
+        docker push $IMAGE
+        export container_properties="{\"image\":\"$IMAGE\",\"executionRoleArn\":\"$EXECUTION_ROLE_ARN\",\"resourceRequirements\":[{\"type\":\"VCPU\",\"value\":\"0.25\"},{\"type\":\"MEMORY\",\"value\":\"512\"}]}"
         aws batch register-job-definition --job-definition-name openwrench_periodic_pm_schedule --platform-capabilities FARGATE --type container --container-properties $container_properties --region us-east-1
