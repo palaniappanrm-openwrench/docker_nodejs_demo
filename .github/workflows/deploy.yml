@@ -35,9 +35,11 @@ jobs:
     - name: Build, tag, and push image to Amazon ECR
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: test1
-        IMAGE_TAG: nodejs_demo_image2
+        ECR_REPOSITORY: openwrench_periodic_pm_schedule
+        IMAGE_TAG: ${{ github.sha }}
       run: |
-        # docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-        # docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-        aws ec2 describe-instances
+        export image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        docker build -t $image .
+        docker push $image
+        export container_properties={\"image\":\"$image\",\"executionRoleArn\":\"string\",\"resourceRequirements\":[{\"type\":\"VCPU\",\"value\":\"0.25\"},{\"type\":\"MEMORY\",\"value\":\"512\"}]}
+        aws batch register-job-definition --job-definition-name openwrench_periodic_pm_schedule --platform-capabilities FARGATE --type container --container-properties container_properties --region us-east-1
