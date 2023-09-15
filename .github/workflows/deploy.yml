@@ -40,4 +40,4 @@ jobs:
         EXECUTION_ROLE_ARN: ${{ secrets.AWS_EXECUTION_ROLE_ARN }}
       run: |
         lscpu
-        free
+        free -h
